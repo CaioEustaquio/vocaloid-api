@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 
 const ProducerSchema = new mongoose.Schema({
-    id: Number,
-    artistic_name: String,
-    name: String,
-    birth_date: Date
-});
+    id: {type: mongoose.Schema.Types.ObjectId},
+    name: {type: String, required: [true, "Producer name is invalid"]}
+}, {versionKey: false});
 
 module.exports = ProducerSchema;
