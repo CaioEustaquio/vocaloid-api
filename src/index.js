@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const bodyParser = require("body-parser");
 const app = express();
 const config = require("./config");
 const conn = require("./db/conn");
@@ -9,7 +10,7 @@ app.use(cors({
     origin: function (origin, callback){
         callback(null, true);
     },
-    methods: 'GET',
+    methods: 'GET, POST',
     allowedHeaders: 'Accept, Content-Type',
     optionsSuccessStatus: 200,
     credentials: true
@@ -34,8 +35,10 @@ app.use(limiter);
     }
 })();
 
+app.use(bodyParser.json());
+
 const producersRoute = require("./routes/producers");
-const songsRoute = require("./routes/songs")
+const songsRoute = require("./routes/songs");
 const vocaloidsRoute = require("./routes/vocaloids");
 
 app.use('/producers', producersRoute);

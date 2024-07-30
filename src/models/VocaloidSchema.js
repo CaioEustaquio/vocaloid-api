@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 
 const VocaloidSchema = new mongoose.Schema({
-    id: Number,
-    name: String,
-    release_data: Date,
-    gender: String,
-    voice: String,
-    height: Number,
-    weight: Number,
-    voice_banks: Array
-});
+    id: {type: mongoose.Schema.Types.ObjectId},
+    name: {type: String},
+    release_data: {type: Date},
+    gender: {type: String},
+    voice: {type: String},
+    voice_banks: {type:Array}
+}, {versionKey: false});
 
 module.exports = VocaloidSchema;
