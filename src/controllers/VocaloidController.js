@@ -12,7 +12,6 @@ const VocaloidController = {
       const results = await VocaloidModel.find({}).lean();
 
       const treatedResults = results.map(({_id, ...rest}) => ({
-        id: _id,
         ...rest
       }));
 
