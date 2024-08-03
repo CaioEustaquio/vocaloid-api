@@ -12,7 +12,6 @@ const ProducerController = {
       const results = await ProducerModel.find({}).lean();
 
       const treatedResults = results.map(({_id, ...rest}) => ({
-        id: _id,
         ...rest
       }));
 
