@@ -11,8 +11,7 @@ const SongController = {
 
       const results = await SongSchema.find({}).lean();
 
-      const treatedResults = results.map(({_id, ...rest}) => ({
-        id: _id,
+      const treatedResults = results.map(({_id, producer_id, ...rest}) => ({
         ...rest
       }));
 
