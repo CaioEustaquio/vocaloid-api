@@ -3,8 +3,9 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
 const app = express();
-const config = require("./config");
+const config = require("./config/config");
 const conn = require("./db/conn");
+const errorHandler = require("./middlewares/errorHandler");
 
 app.use(cors({
     origin: function (origin, callback){
@@ -44,6 +45,8 @@ const vocaloidsRoute = require("./routes/vocaloids");
 app.use('/producers', producersRoute);
 app.use('/songs', songsRoute);
 app.use('/vocaloids', vocaloidsRoute);
+
+app.use(errorHandler);
 
 app.listen(config.port, () =>{
     console.log("Server is running!");

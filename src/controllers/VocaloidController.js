@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const VocaloidSchema = require("./../models/VocaloidSchema");
 
-const VocaloidController = {
+class VocaloidController{
 
-  async getAll(){
+  static async getAll(req, res, next){
 
     try{
 
@@ -15,11 +15,10 @@ const VocaloidController = {
         ...rest
       }));
 
-      return treatedResults;
+      res.status(200).json(treatedResults);
 
     }catch(err){
-      console.log(err);
-      return {error: true, message: err.message, statusCode: 420};
+      next(err)
     }
   }
 
