@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const ProducerSchema = require("./../models/ProducerSchema");
 
-const ProducerController = {
+class ProducerController{
 
-  async getAll(){
+  static async getAll(req, res, next){
 
     try{
 
@@ -15,11 +15,10 @@ const ProducerController = {
         ...rest
       }));
 
-      return treatedResults;
+      res.status(200).json(treatedResults);
 
     }catch(err){
-      console.log(err);
-      return {error: true, message: err.message, statusCode: 420};
+      next(err);
     }
   }
 

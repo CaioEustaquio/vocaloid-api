@@ -3,9 +3,9 @@ const SongSchema = require("./../models/SongSchema");
 const SingersSchema = require("./../models/SingersSchema");
 const SongSingersSchema = require("./../models/SongSingersSchema");
 
-const SongController = {
+class SongController{
 
-  async getAll(){
+  static async getAll(req, res, next){
 
     try{
 
@@ -15,30 +15,35 @@ const SongController = {
         ...rest
       }));
 
-      return treatedResults;
+      res.status(200).json(treatedResults);
 
     }catch(err){
-      return {error: true, message: err.message, statusCode: 500};
+      next(err);
     }
-  },
+  }
 
-  // async getById(songId){
+  static async getById(req, res, next){
 
-  //   try{
+    try{
 
-  //     const results = await SongSchema.findById(songId);
+      const foundedSong = await SongSchema.findById(req.params.id);
 
-  //     return results;
+      if(foundedSong == null){
+        throw new Error("Song do not exists");
+      }
 
-  //   }catch(err){
-  //     return {error: true, message: err.message, statusCode: 500};
-  //   }
-  // },
+      res.status(200).json(foundedSong);
+
+    }catch(err){
+      next(err);
+    }
+  }
   
-  async save(data){
+  static async save(req, res, next){
 
-    // const session = await mongoose.startSession();
-    
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try{
 
       let {
@@ -47,22 +52,22 @@ const SongController = {
         producer,
         release_date,
         singers
-      } = data;
+      } = req.body;
 
       if(!name || name === ""){
 
-        throw {message: "The song name cannot be empty", status: 420};
+        throw new Error("The song name cannot be empty");
 
       }else if(!producer || producer === ""){
         
-        throw {message: "The producer name cannot be empty", status: 420};
-
+        throw new Error("The producer name cannot be empty");
+        
       }else if(!release_date || release_date === ""){
-
-        throw {message: "The release date cannot be empty", status: 420};
-
+        
+        throw new Error("The release date cannot be empty");
+        
       }else if(singers.length <= 0){
-        throw {message: "The singers are invalid", status: 420};
+        throw new Error("The singers are invalid");
       }
 
       const song = {
@@ -72,8 +77,6 @@ const SongController = {
         producer_id: producer
       }
 
-      // session.startTransaction();
-
       const songExists = await SongSchema.find({
         $or: [
           {name: song.name},
@@ -82,39 +85,41 @@ const SongController = {
       }).lean();
 
       if(songExists.length > 0){
-        throw {message: "The song already exists", status: 420};
+        throw new Error("The song already exists");
       }
 
-      const createdSong = await SongSchema.create(song);
+      const query = await SongSchema.create([song], {session});
+
+      const createdSong = query[0];
 
       const singerIds = singers.split(",");
 
       await Promise.all(singerIds.map(async (s) => {
-        let singerExists = await SingersSchema.findById(s);
+        let singerExists = await SingersSchema.findById(s).session(session);
   
         if (!singerExists){
-          throw { message: `The singer(s) are invalid`, status: 420 };
+          throw new Error("The singer(s) are invalid");
         }
-  
+
         const songSinger = {
           singer_id: s,
           song_id: createdSong._id
         };
-  
-        await SongSingersSchema.create(songSinger);
+
+        await SongSingersSchema.create([songSinger], {session});
       }));
 
-      // await session.commitTransaction();
-      // session.endSession();
+      await session.commitTransaction();
+      session.endSession();
 
       const {_id, producer_id, ...treatedResults} = createdSong.toObject();
-      return treatedResults;
+
+      res.status(201).json(treatedResults);
       
     }catch(err){
-      console.log(err);
-      // await session.abortTransaction();
-      // session.endSession();
-      return {error: true, message: err.message, statusCode: err.status};
+      await session.abortTransaction();
+      session.endSession();
+      next(err);
     }
   }
 }
