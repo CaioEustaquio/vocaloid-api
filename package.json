@@ -4,7 +4,7 @@
   "description": "Vocaloids data API",
   "main": "src/index.js",
   "scripts": {
-    "start": "SET NODE_ENV=production& node --env-file .env.production src/index.js",
+    "start": "SET NODE_ENV=production& node --env-file .env src/index.js",
     "dev": "SET NODE_ENV=development& nodemon --env-file .env.development src/index.js"
   },
   "repository": {
