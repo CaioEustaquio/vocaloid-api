@@ -31,7 +31,7 @@ Copy file .env.example to .env.production and config environment vars as needed.
 Run the server
 
 ```bash
-npm run dev
+npm run start
 ```
 
 ## Project Layers
