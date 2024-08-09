@@ -24,7 +24,7 @@ npm install
 
 ## Config
 
-Copy file .env.example to .env.production and config environment vars as needed.
+Copy file .env.example to .env and config environment vars as needed.
 
 ## Use
 
